@@ -12,23 +12,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>// standard input/output
+#include <stdlib.h>// standard library
 #include <string.h>
 #include <math.h>
 #include <pthread.h>
 
-#define MAX_STRING 100
+#define MAX_STRING 100 //最大单词长度
 #define EXP_TABLE_SIZE 1000
 #define MAX_EXP 6
-#define MAX_SENTENCE_LENGTH 1000
+#define MAX_SENTENCE_LENGTH 1000 //最大句子长度
 #define MAX_CODE_LENGTH 40
 
 const int vocab_hash_size = 30000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
 
 typedef float real;                    // Precision of float numbers
 
-struct vocab_word {
+struct vocab_word {  // vocab 中的一个 word
   long long cn;
   int *point;
   char *word, *code, codelen;
@@ -67,29 +67,30 @@ void InitUnigramTable() {
   }
 }
 
-// Reads a single word from a file, assuming space + tab + EOL to be word boundaries
+// Reads a single word from a file, assuming（ space + tab + EOL ）to be word boundaries
 void ReadWord(char *word, FILE *fin) {
   int a = 0, ch;
   while (!feof(fin)) {
-    ch = fgetc(fin);
-    if (ch == 13) continue;
+    ch = fgetc(fin);    // 从文件指针stream指向的文件中读取一个字符，读取一个字节后，光标位置后移一个字节。
+    if (ch == 13) continue; // 回车键
     if ((ch == ' ') || (ch == '\t') || (ch == '\n')) {
       if (a > 0) {
-        if (ch == '\n') ungetc(ch, fin);
+        if (ch == '\n') ungetc(ch, fin);   // 把一个（或多个）字符退回到输入流中，可以理解成一个“计数器”。
         break;
       }
-      if (ch == '\n') {
-        strcpy(word, (char *)"</s>");
+      if (ch == '\n') { // 第一个字符就是行尾，且 a ＝＝ 0
+        strcpy(word, (char *)"</s>");  // 把从src地址开始且含有'\0'结束符的字符串复制到以dest开始的地址空间。
         return;
-      } else continue;
+      } else continue; // 多个空格，或是 \t 的话，就会过滤掉
     }
     word[a] = ch;
     a++;
     if (a >= MAX_STRING - 1) a--;   // Truncate too long words
   }
-  word[a] = 0;
+  word[a] = 0;  // 这里是 0 ，为何不是 \0 ？
 }
 
+// hash 函数，对于一个 string
 // Returns hash value of a word
 int GetWordHash(char *word) {
   unsigned long long a, hash = 0;
@@ -98,6 +99,7 @@ int GetWordHash(char *word) {
   return hash;
 }
 
+// 感觉像是有两层 hash 函数
 // Returns position of a word in the vocabulary; if the word is not found, returns -1
 int SearchVocab(char *word) {
   unsigned int hash = GetWordHash(word);
@@ -112,16 +114,16 @@ int SearchVocab(char *word) {
 // Reads a word and returns its index in the vocabulary
 int ReadWordIndex(FILE *fin) {
   char word[MAX_STRING];
-  ReadWord(word, fin);
-  if (feof(fin)) return -1;
-  return SearchVocab(word);
+  ReadWord(word, fin);           // 向 word 中读入一个单词
+  if (feof(fin)) return -1;      // 检测流上的文件结束符
+  return SearchVocab(word);      // 搜索这个单词，看是否添加进 vocab 中
 }
 
 // Adds a word to the vocabulary
 int AddWordToVocab(char *word) {
   unsigned int hash, length = strlen(word) + 1;
   if (length > MAX_STRING) length = MAX_STRING;
-  vocab[vocab_size].word = (char *)calloc(length, sizeof(char));
+  vocab[vocab_size].word = (char *)calloc(length, sizeof(char));  // 分配空间
   strcpy(vocab[vocab_size].word, word);
   vocab[vocab_size].cn = 0;
   vocab_size++;
@@ -132,38 +134,42 @@ int AddWordToVocab(char *word) {
   }
   hash = GetWordHash(word);
   while (vocab_hash[hash] != -1) hash = (hash + 1) % vocab_hash_size;
-  vocab_hash[hash] = vocab_size - 1;
+  vocab_hash[hash] = vocab_size - 1;   // vocab_hash 中存放这个单词放入的位置
   return vocab_size - 1;
 }
 
+// 比较两个词的出现次数， cn 属性就是词的出现次数
+// 注意： 这里这样写，会使排序生成的是递减序列
 // Used later for sorting by word counts
 int VocabCompare(const void *a, const void *b) {
     return ((struct vocab_word *)b)->cn - ((struct vocab_word *)a)->cn;
 }
+
 
 // Sorts the vocabulary by frequency using word counts
 void SortVocab() {
   int a, size;
   unsigned int hash;
   // Sort the vocabulary and keep </s> at the first position
-  qsort(&vocab[1], vocab_size - 1, sizeof(struct vocab_word), VocabCompare);
+  qsort(&vocab[1], vocab_size - 1, sizeof(struct vocab_word), VocabCompare);     // void qsort(void *base,int nelem,int width,int (*fcmp)(const void *,const void *));
   for (a = 0; a < vocab_hash_size; a++) vocab_hash[a] = -1;
   size = vocab_size;
   train_words = 0;
   for (a = 0; a < size; a++) {
     // Words occuring less than min_count times will be discarded from the vocab
-    if ((vocab[a].cn < min_count) && (a != 0)) {
+    if ((vocab[a].cn < min_count) && (a != 0)) {   // 删除出现次数低的词
       vocab_size--;
       free(vocab[a].word);
     } else {
       // Hash will be re-computed, as after the sorting it is not actual
+      // 因为对单词进行重新排序了，所以要重新记录 hash 值
       hash=GetWordHash(vocab[a].word);
       while (vocab_hash[hash] != -1) hash = (hash + 1) % vocab_hash_size;
       vocab_hash[hash] = a;
-      train_words += vocab[a].cn;
+      train_words += vocab[a].cn;  // train_words 为训练集中词（包含重复的）的个数
     }
   }
-  vocab = (struct vocab_word *)realloc(vocab, (vocab_size + 1) * sizeof(struct vocab_word));
+  vocab = (struct vocab_word *)realloc(vocab, (vocab_size + 1) * sizeof(struct vocab_word));   // 多分配一个位置的内存
   // Allocate memory for the binary tree construction
   for (a = 0; a < vocab_size; a++) {
     vocab[a].code = (char *)calloc(MAX_CODE_LENGTH, sizeof(char));
@@ -181,17 +187,19 @@ void ReduceVocab() {
     b++;
   } else free(vocab[a].word);
   vocab_size = b;
-  for (a = 0; a < vocab_hash_size; a++) vocab_hash[a] = -1;
+  for (a = 0; a < vocab_hash_size; a++) vocab_hash[a] = -1;     // vocab_hash 全部置为 －1
   for (a = 0; a < vocab_size; a++) {
     // Hash will be re-computed, as it is not actual
     hash = GetWordHash(vocab[a].word);
     while (vocab_hash[hash] != -1) hash = (hash + 1) % vocab_hash_size;
     vocab_hash[hash] = a;
   }
-  fflush(stdout);
+  fflush(stdout);  // 清除读写缓冲区，需要立即把输出缓冲区的数据进行物理写入时
   min_reduce++;
 }
 
+
+// 根据词频构造哈夫曼树 二叉
 // Create binary Huffman tree using the word counts
 // Frequent words will have short uniqe binary codes
 void CreateBinaryTree() {
@@ -199,11 +207,13 @@ void CreateBinaryTree() {
   char code[MAX_CODE_LENGTH];
   long long *count = (long long *)calloc(vocab_size * 2 + 1, sizeof(long long));
   long long *binary = (long long *)calloc(vocab_size * 2 + 1, sizeof(long long));
-  long long *parent_node = (long long *)calloc(vocab_size * 2 + 1, sizeof(long long));
-  for (a = 0; a < vocab_size; a++) count[a] = vocab[a].cn;
-  for (a = vocab_size; a < vocab_size * 2; a++) count[a] = 1e15;
+  long long *parent_node = (long long *)calloc(vocab_size * 2 + 1, sizeof(long long)); // 记录父节点
+  for (a = 0; a < vocab_size; a++) count[a] = vocab[a].cn;  // count里面存放词的出现次数
+  for (a = vocab_size; a < vocab_size * 2; a++) count[a] = 1e15; // count后半部分没有词对应，所以设置出现次数为 ：1e15
   pos1 = vocab_size - 1;
   pos2 = vocab_size;
+
+  // 构建  树
   // Following algorithm constructs the Huffman tree by adding one node at a time
   for (a = 0; a < vocab_size - 1; a++) {
     // First, find two smallest nodes 'min1, min2'
@@ -231,10 +241,10 @@ void CreateBinaryTree() {
       min2i = pos2;
       pos2++;
     }
-    count[vocab_size + a] = count[min1i] + count[min2i];
+    count[vocab_size + a] = count[min1i] + count[min2i]; // 更新出现次数
     parent_node[min1i] = vocab_size + a;
     parent_node[min2i] = vocab_size + a;
-    binary[min2i] = 1;
+    binary[min2i] = 1;  // ?
   }
   // Now assign binary code to each vocabulary word
   for (a = 0; a < vocab_size; a++) {
@@ -254,6 +264,8 @@ void CreateBinaryTree() {
       vocab[a].point[i - b] = point[b] - vocab_size;
     }
   }
+    
+  // 看来下面这三个只是用来存储中间结果
   free(count);
   free(binary);
   free(parent_node);
@@ -302,6 +314,8 @@ void SaveVocab() {
   fclose(fo);
 }
 
+
+
 void ReadVocab() {
   long long a, i = 0;
   char c;
@@ -335,6 +349,10 @@ void ReadVocab() {
   fclose(fin);
 }
 
+
+
+
+
 void InitNet() {
   long long a, b;
   unsigned long long next_random = 1;
@@ -358,6 +376,13 @@ void InitNet() {
   }
   CreateBinaryTree();
 }
+
+
+
+
+
+
+
 
 void *TrainModelThread(void *id) {
   long long a, b, d, cw, word, last_word, sentence_length = 0, sentence_position = 0;
@@ -541,6 +566,9 @@ void *TrainModelThread(void *id) {
   pthread_exit(NULL);
 }
 
+
+
+// 模型的训练方法
 void TrainModel() {
   long a, b, c, d;
   FILE *fo;
