@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="My_work"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="hadoop_lib/asm-3.2.jar"/>
 	<classpathentry kind="lib" path="hadoop_lib/aspectjrt-1.6.11.jar"/>
@@ -47,5 +48,65 @@
 	<classpathentry kind="lib" path="hadoop_lib/slf4j-api-1.4.3.jar"/>
 	<classpathentry kind="lib" path="hadoop_lib/slf4j-log4j12-1.4.3.jar"/>
 	<classpathentry kind="lib" path="hadoop_lib/xmlenc-0.52.jar"/>
+	<classpathentry kind="lib" path="hadoop_lib/hadoop-core-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/asm-3.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/avro-1.5.3.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/avro-ipc-1.5.3.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-beanutils-1.7.0.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-beanutils-core-1.8.0.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-configuration-1.6.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-digester-1.8.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-el-1.0.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-io-2.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-math-2.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/commons-net-1.4.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/core-3.1.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/guava-11.0.2.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/hadoop-core-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/hbase-0.94.27.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/high-scale-lib-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/httpclient-4.1.2.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/httpcore-4.1.3.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jackson-core-asl-1.8.8.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jackson-jaxrs-1.8.8.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jackson-mapper-asl-1.8.8.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jackson-xc-1.8.8.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jamon-runtime-2.3.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jasper-compiler-5.5.23.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jasper-runtime-5.5.23.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jaxb-api-2.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jaxb-impl-2.2.3-1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jersey-core-1.8.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jersey-json-1.8.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jersey-server-1.8.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jettison-1.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jetty-6.1.26.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jetty-util-6.1.26.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jruby-complete-1.6.5.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jsp-2.1-6.1.14.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jsp-api-2.1-6.1.14.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/jsr305-1.3.9.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/libthrift-0.8.0.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/metrics-core-2.1.2.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/netty-3.2.4.Final.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/protobuf-java-2.4.0a.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/servlet-api-2.5-6.1.14.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/slf4j-api-1.4.3.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/slf4j-log4j12-1.4.3.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/snappy-java-1.0.3.2.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/stax-api-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/velocity-1.7.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/xmlenc-0.52.jar"/>
+	<classpathentry kind="lib" path="lib_hbase/zookeeper-3.4.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
